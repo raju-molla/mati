@@ -1,0 +1,187 @@
+@import "tailwindcss";
+
+/* ───────────────────────────────────────────────
+   Design tokens — public site is a warm, cinematic
+   dark palette; the admin uses Tailwind's neutral
+   light palette scoped under .admin-root.
+   ─────────────────────────────────────────────── */
+@theme {
+  --color-ink: #0d0c0a;
+  --color-ink-2: #15140f;
+  --color-ink-3: #1d1b16;
+  --color-paper: #ecebe5;
+  --color-paper-dim: #c9c6bd;
+  --color-muted: #948f84;
+  --color-line: rgb(236 235 229 / 0.12);
+  --color-line-strong: rgb(236 235 229 / 0.24);
+  --color-accent: #d9a35b;
+  --color-accent-soft: rgb(217 163 91 / 0.14);
+
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --text-display: clamp(3.25rem, 11vw, 11.5rem);
+  --text-display--line-height: 0.86;
+  --text-display--letter-spacing: -0.045em;
+  --text-headline: clamp(2.25rem, 5.4vw, 5rem);
+  --text-headline--line-height: 0.98;
+  --text-headline--letter-spacing: -0.03em;
+
+  --ease-cinema: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius-card: 0.375rem;
+}
+
+
+/* Utilities that other classes @apply (Tailwind v4 requires @utility for this). */
+@utility label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--color-muted);
+}
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s var(--ease-cinema);
+}
+@utility a-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ink text-paper font-sans antialiased;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .admin-root :focus-visible {
+    outline-color: #18181b;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  .container-x {
+    @apply mx-auto w-full max-w-[1480px] px-5 sm:px-8 lg:px-12;
+  }
+  .rule {
+    @apply border-line;
+  }
+  .btn-primary {
+    @apply btn bg-paper text-ink hover:bg-accent;
+  }
+  .btn-ghost {
+    @apply btn border border-line-strong text-paper hover:border-paper hover:bg-paper/5;
+  }
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.5s var(--ease-cinema);
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
+  }
+  .prose-editorial p {
+    @apply mb-5 text-lg leading-relaxed text-paper-dim last:mb-0;
+  }
+  /* Film grain overlay used on hero + placeholders. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.09;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Form controls (public) */
+  .field {
+    @apply block w-full border-0 border-b border-line-strong bg-transparent px-0 py-3 text-base text-paper placeholder:text-muted/70 transition-colors focus:border-accent focus:ring-0 focus:outline-none;
+  }
+  .field-label {
+    @apply label mb-1 block;
+  }
+
+  /* Admin primitives */
+  .a-input {
+    @apply block w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 focus:outline-none disabled:bg-zinc-50;
+  }
+  .a-label {
+    @apply mb-1.5 block text-sm font-medium text-zinc-800;
+  }
+  .a-help {
+    @apply mt-1 text-xs text-zinc-500;
+  }
+  .a-btn-primary {
+    @apply a-btn bg-zinc-900 text-white hover:bg-zinc-700;
+  }
+  .a-btn-secondary {
+    @apply a-btn border border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-50;
+  }
+  .a-btn-danger {
+    @apply a-btn bg-red-600 text-white hover:bg-red-700;
+  }
+  .a-card {
+    @apply rounded-lg border border-zinc-200 bg-white;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
